@@ -54,15 +54,47 @@ class BareKeyValue extends Printable
     public static function fromString($tomlString)
     {
         if (preg_match('/([A-Za-z0-9_\-]+)[\t ]*=[\t ]*(["\'])?(.*)$/', $tomlString, $matches)) {
-            if ($matches[2] !== '' && $matches[2] !== substr($matches[3], -1)) {
-                throw new Exception(sprintf('Value "%s" for key "%s" incorrectly quoted!', $matches[3], $matches[1]));
+            $rQuote = '';
+            if ($matches[2] !== '') {
+                $rQuote = substr($matches[3], -1);
+                if ($matches[2] !== $rQuote) {
+                    throw new Exception(sprintf('Value "%s" for key "%s" incorrectly quoted!', $matches[3], $matches[1]));
+                }
             }
 
-            // TODO: check value and cast to int, float, date, ...
+            // Remove closing quote from value.
+            $value = rtrim($matches[3], $matches[2]);
+
+            if ($rQuote === '') {
+                switch (true) {
+                    case is_float($value):
+                        $value = (float)$value;
+                        break;
+
+                    case preg_match('/\d+/', $value) === 1:
+                        $value = (int)$value;
+                        break;
+
+                    case $value === 'true';
+                        $value = true;
+                        break;
+
+                    case $value === 'false';
+                        $value = false;
+                        break;
+
+                    case ($date = date_create($value)) !== false:
+                        $value = $date;
+                        break;
+
+                    case is_string($value):
+                        throw new Exception(sprintf('Unquoted string value "%s" for key "%s"', $value, $matches[2]));
+                }
+            }
 
             return new static(
                 $matches[1],
-                rtrim($matches[3], $matches[2]), // Remove trailing value quote.
+                $value,
                 $matches[2]
             );
         }
@@ -101,7 +133,7 @@ class BareKeyValue extends Printable
             $this->key .
             ' = ' .
             $this->valueQuote .
-            $this->value .
+            $this->boolToString($this->value) .
             $this->valueQuote .
             "\n"
         ;

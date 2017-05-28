@@ -20,3 +20,32 @@ or edit composer.json and add:
     }
 }
 ```
+
+## Usage examples
+
+###### Parse file to array
+
+```php
+$config = Toml::fromFile('config.toml')->toArray();
+```
+
+###### PrettyPrint
+
+```php
+$toml = Toml::fromFile('config.toml')->prettyPrint(-1);
+
+// Or like this
+$toml = (string)Toml::fromFile('config.toml');
+```
+
+
+###### Edit a toml file and save it again
+
+```php
+$toml = Toml::fromFile('/path/to/config.toml');
+
+// Do stuff with $toml... Some fancy helper methods will be added soon.
+
+// Or like this
+$toml->saveToFile('/path/to/config.toml');
+```

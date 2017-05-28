@@ -31,6 +31,19 @@ abstract class Printable
      */
     abstract public function toArray();
 
+    /**
+     * Convert a boolean to TOML string notation.
+     *
+     * @param $value
+     * @return string
+     */
+    public function boolToString($value) {
+        if (is_bool($value)) {
+            return ($value === true) ? 'true' : 'false';
+        }
+        return $value;
+    }
+
     public function __toString()
     {
         return $this->prettyPrint(0);

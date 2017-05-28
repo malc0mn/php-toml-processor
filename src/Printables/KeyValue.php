@@ -75,11 +75,40 @@ class KeyValue extends Printable
                 }
             }
 
+            // Remove closing quote from value.
+            $value = rtrim($matches[5], $rQuote);
+
             // TODO: check value and cast to int, float, date, ...
+            if ($rQuote === '') {
+                switch (true) {
+                    case is_float($value):
+                        $value = (float)$value;
+                        break;
+
+                    case preg_match('/\d+/', $value) === 1:
+                        $value = (int)$value;
+                        break;
+
+                    case $value === 'true';
+                        $value = true;
+                        break;
+
+                    case $value === 'false';
+                        $value = false;
+                        break;
+
+                    case ($date = date_create($value)) !== false:
+                        $value = $date;
+                        break;
+
+                    case is_string($value):
+                        throw new Exception(sprintf('Unquoted string value "%s" for key "%s"', $value, $matches[2]));
+                }
+            }
 
             $keyVal = new static(
                 $matches[2],
-                rtrim($matches[5], $rQuote), // Remove closing quote from value.
+                $value,
                 $matches[1],
                 $matches[4]
             );
@@ -127,7 +156,7 @@ class KeyValue extends Printable
             $this->keyQuote .
             ' = ' .
             $this->valueQuote .
-            $this->value .
+            $this->boolToString($this->value) .
             $this->valueQuote .
             "\n"
         ;
