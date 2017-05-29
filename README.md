@@ -49,3 +49,20 @@ $toml = Toml::fromFile('/path/to/config.toml');
 // Or like this
 $toml->saveToFile('/path/to/config.toml');
 ```
+
+## Credits
+
+The basic setup is based on Roman Piták's [Nginx Config Processor](https://github.com/romanpitak/Nginx-Config-Processor)
+which I personally like very much! Thanks for that @romanpitak! Credits were
+left in the files I re-used and modified.
+
+I also used the [Doctrine Lexer](https://github.com/doctrine/lexer) class which
+I simply included as I did not want to add a dependency for a single file. I
+also added an additional method (IMHO: a mistake in the Doctrine Lexer is a
+missing setter for the `position` property. Not for the faint of heart, but it
+would make the lexer completely extendable)...
+Thanks to @doctrine for that one!
+
+This repo was created by [integr.io](http://integr.io/) for use in one of
+our Symfony applications.
+It has been reworked with extensibility and ease of use in mind.
