@@ -65,4 +65,3 @@ Thanks to @doctrine for that one!
 
 This repo was created by [integr.io](http://integr.io/) for use in one of
 our Symfony applications.
-It has been reworked with extensibility and ease of use in mind.
